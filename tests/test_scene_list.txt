@@ -1,8 +1,0 @@
-LE70230282011250EDC00	general L7ETM
-LE70390372008210EDC00	arid, bare, near water, with clouds - bring it
-LE72101172013061ASN00	L7ETM PS
-LT40230281982346XXX04	general L4TM
-LT50160402010126EDC00	general L5TM
-LT50230281984344XXX02	ozone test (pre-ozone problems, no expected SR changes)
-LT50100542011071CHM00	cfmask test scene
-LT50310181990192PAC00	this scene gives cfmask fits

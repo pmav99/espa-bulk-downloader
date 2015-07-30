@@ -1,9 +1,0 @@
- ~/bin/hadoop/bin/hadoop jar /home/dhill/bin/hadoop/mapred/contrib/streaming/hadoop-0.21.0-streaming.jar -inputreader "StreamXmlRecordReader,begin=<metaData>,end=</metaData>" -input md/metadata.xml -mapper ~/checkout/espa/trunk/prototype/xml_mapper.py -file ~/checkout/espa/trunk/prototype/xml_mapper.py -output metadata/out -numReduceTasks 0
-
- ~/bin/hadoop/bin/hadoop jar /home/dhill/bin/hadoop/mapred/contrib/streaming/hadoop-0.21.0-streaming.jar -inputreader "StreamXmlRecordReader,begin=<metaData>,end=</metaData>" -input md/metadata.xml -mapper ~/checkout/espa/trunk/prototype/xml_mapper.py -file ~/checkout/espa/trunk/prototype/xml_mapper.py -reducer ~/checkout/espa/trunk/prototype/xml_reducer.py -file ~/checkout/espa/trunk/prototype/xml_reducer.py -output metadata/out -numReduceTasks 1
-
-curl "http://localhost:8983/solr/update/csv?commit=true&separator=%3b&fieldnames=sceneID,browseURL,acquisitionDate,sensor,path,row,upperLeftCornerLatLong,upperRightCornerLatLong,lowerLeftCornerLatLong,lowerRightCornerLatLong,sceneCenterLatLong,cloudCover,dayOrNight,sunElevation,sunAzimuth,receivingStation,imageQuality1,imageQuality2," --data-binary @etm-index.csv -H 'Content-type:text/plain; charset=utf-8'
-
-
-
-

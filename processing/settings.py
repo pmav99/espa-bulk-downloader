@@ -1,1 +1,0 @@
-../espa_common/settings.py
