@@ -19,8 +19,8 @@ once per hour.
  
 Examples:
 
-Linux/Mac: `python ./download_espa_order.py -e your_email@server.com -o ALL -d /some/directory/with/free/space`
+Linux/Mac: python ./download_espa_order.py -e your_email@server.com -o ALL -d /some/directory/with/free/space
 
-Windows:   `C:\python27\python download_espa_order.py -e your_email@server.com -o ALL -d C:\some\directory\with\free\space`
+Windows: C:\python27\python download_espa_order.py -e your_email@server.com -o ALL -d C:\some\directory\with\free\space
 
     
