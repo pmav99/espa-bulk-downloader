@@ -72,7 +72,6 @@ class Scene(object):
         self.name = self.filename.split('.tar.gz')[0]
         
                   
-              
 class LocalStorage(object):
     
     def __init__(self, basedir):
@@ -109,7 +108,6 @@ class LocalStorage(object):
             shutil.copyfileobj(req, target_handle)
         
         os.rename(self.tmp_scene_path(scene), self.scene_path(scene))
-
 
 
 if __name__ == '__main__':
@@ -154,5 +152,3 @@ if __name__ == '__main__':
     
     for scene in SceneFeed(args.email).get_items(args.order):
         storage.store(scene)
-        
-    
