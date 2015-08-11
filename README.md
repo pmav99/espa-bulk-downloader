@@ -1,4 +1,4 @@
-Automatically downloads all completed espa scenes to your local machine.  Each scene is downloaded to the `--target_directory` and organized by order.
+Automatically downloads all completed espa scenes.  Each scene is downloaded to the `--target_directory` and organized by order.
 
 # Installation
 * Tested with python 2.7.
