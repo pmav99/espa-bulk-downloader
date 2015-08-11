@@ -1,10 +1,10 @@
-#Installation
+# Installation
 * Install python 2.7.
 * Clone this repository: `git clone https://github.com/USGS-EROS/espa-bulk-downloader.git bulk-downloader`
 * `cd bulk-downloader`
-* `./
-ESPA Bulk Download Client Version 1.0.0. [Tested with Python 2.7]
+* `./download_espa_order.py -h`
 
+# Notes
 Retrieves all completed scenes for the user/order
 and places them into the target directory.
 Scenes are organized by order.
@@ -19,8 +19,8 @@ once per hour.
  
 Examples:
 
-Linux/Mac: python ./download_espa_order.py -e your_email@server.com -o ALL -d /some/directory/with/free/space
+Linux/Mac: `python ./download_espa_order.py -e your_email@server.com -o ALL -d /some/directory/with/free/space`
 
-Windows: C:\python27\python download_espa_order.py -e your_email@server.com -o ALL -d C:\some\directory\with\free\space
+Windows: `C:\python27\python download_espa_order.py -e your_email@server.com -o ALL -d C:\some\directory\with\free\space`
 
     
