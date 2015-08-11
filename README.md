@@ -3,7 +3,7 @@ Automatically download all completed espa scenes to your local machine.  Each sc
 * Tested with python 2.7.
 * Clone this repository: `git clone https://github.com/USGS-EROS/espa-bulk-downloader.git bulk-downloader`
 * `cd bulk-downloader`
-* `./download_espa_order.py -h`
+* `python ./download_espa_order.py -h`
 
 ### Runtime options
 `-e` The email address used to submit the order
@@ -12,7 +12,7 @@ Automatically download all completed espa scenes to your local machine.  Each sc
 
 `-d` The local directory to store downloaded scenes
 
-Linux/Mac Example: `./download_espa_order.py -e your_email@server.com -o ALL -d /some/directory/with/free/space`
+Linux/Mac Example: `python ./download_espa_order.py -e your_email@server.com -o ALL -d /some/directory/with/free/space`
 
 Windows Example: `C:\python27\python download_espa_order.py -e your_email@server.com -o ALL -d C:\some\directory\with\free\space`
 
