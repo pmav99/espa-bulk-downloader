@@ -1,3 +1,4 @@
+Automatically download all completed espa scenes to your local machine.  
 # Installation
 * Install python 2.7.
 * Clone this repository: `git clone https://github.com/USGS-EROS/espa-bulk-downloader.git bulk-downloader`
