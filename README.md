@@ -6,11 +6,11 @@ Automatically download all completed espa scenes to your local machine.  Each sc
 * `./download_espa_order.py -h`
 
 ### Runtime options
--e The email address used to submit the order
+`-e` The email address used to submit the order
 
--o The order you wish to download.  Maybe also use `ALL`
+`-o` The order you wish to download.  Maybe also use `ALL`
 
--d The local directory to store downloaded scenes
+`-d` The local directory to store downloaded scenes
 
 Linux/Mac Example: `./download_espa_order.py -e your_email@server.com -o ALL -d /some/directory/with/free/space`
 Windows Example: `C:\python27\python download_espa_order.py -e your_email@server.com -o ALL -d C:\some\directory\with\free\space`
