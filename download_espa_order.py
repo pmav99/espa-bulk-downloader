@@ -16,6 +16,10 @@ import urllib2
 import argparse
 import shutil
 import os
+import hashlib  # Python 2.5+ only; replaced md5 and sha modules
+
+MAX_RETRIES = 3
+
 
 class SceneFeed(object):
     """SceneFeed parses the ESPA RSS Feed for the named email address and generates
@@ -62,7 +66,9 @@ class Scene(object):
     def __init__(self, srcurl, orderid):
     
         self.srcurl = srcurl
-    
+
+        self.md5url = srcurl.replace('tar.gz', 'md5')
+
         self.orderid = orderid
         
         parts = self.srcurl.split("/")
@@ -85,12 +91,12 @@ class LocalStorage(object):
     
     def tmp_scene_path(self, scene):
         return ''.join([self.directory_path(scene), scene.filename, '.part'])
-    
-    def is_stored(self, scene):        
-        return os.path.exists(self.scene_path(scene))        
-    
-    def store(self, scene):
-        
+
+    def is_stored(self, scene):
+        return os.path.exists(self.scene_path(scene))
+
+    def store(self, scene, check_md5=False):
+
         if self.is_stored(scene): return
                     
         download_directory = self.directory_path(scene)
@@ -99,14 +105,37 @@ class LocalStorage(object):
         if not os.path.exists(download_directory):
             os.makedirs(download_directory)
             print ("Created target_directory:%s" % download_directory)
-        
-        req = urllib2.urlopen(scene.srcurl)
 
-        print ("Copying %s to %s" % (scene.name, download_directory))
-        
-        with open(self.tmp_scene_path(scene), 'wb') as target_handle:
-            shutil.copyfileobj(req, target_handle)
-        
+        dl_okay = False
+        n_retries = 0
+        while not dl_okay:
+            print ("Copying %s to %s" % (scene.name, download_directory))
+            req = urllib2.urlopen(scene.srcurl)
+
+            with open(self.tmp_scene_path(scene), 'wb') as target_handle:
+                shutil.copyfileobj(req, target_handle)
+
+            if check_md5:
+                try:
+                    md5_req = urllib2.urlopen(scene.md5url)
+                except urllib2.URLError:
+                    print("md5 checksum for %s not available" % scene.name)
+                    dl_okay = True
+                else:
+                    md5sum_truth = md5_req.readline().split()[0]
+                    with open(self.tmp_scene_path(scene), 'r') as dl:
+                        md5sum_test = hashlib.md5(dl.read()).hexdigest()
+
+                    if md5sum_truth != md5sum_test:
+                        if n_retries >= MAX_RETRIES:
+                            print("md5 checksum for %s is not valid, but maximum retries exceeded" % scene.name)
+                            os.remove(self.tmp_scene_path(scene))
+                        else:
+                            print("md5 checksum for %s is not valid. Retrying download" % scene.name)
+                            n_retries += 1
+                    else:
+                        dl_okay = True
+
         os.rename(self.tmp_scene_path(scene), self.scene_path(scene))
 
 
@@ -127,28 +156,32 @@ if __name__ == '__main__':
     e_parts.append('------------\n')
     e_parts.append('Examples:\n')
     e_parts.append('------------\n')
-    e_parts.append('Linux/Mac: ./download_espa_order.py -e your_email@server.com -o ALL -d /some/directory/with/free/space\n\n') 
+    e_parts.append('Linux/Mac: ./download_espa_order.py -e your_email@server.com -o ALL -d /some/directory/with/free/space\n\n')
     e_parts.append('Windows:   C:\python27\python download_espa_order.py -e your_email@server.com -o ALL -d C:\some\directory\with\\free\space')
     e_parts.append('\n ')
     epilog = ''.join(e_parts)
- 
+
     parser = argparse.ArgumentParser(epilog=epilog, formatter_class=argparse.RawDescriptionHelpFormatter)
-    
-    parser.add_argument("-e", "--email", 
+
+    parser.add_argument("-e", "--email",
                         required=True,
                         help="email address for the user that submitted the order)")
-                        
+
     parser.add_argument("-o", "--order",
                         required=True,
                         help="which order to download (use ALL for every order)")
-                        
+
     parser.add_argument("-d", "--target_directory",
                         required=True,
-                        help="where to store the downloaded scenes")   
-    
+                        help="where to store the downloaded scenes")
+
+    parser.add_argument("-c", "--check_downloads",
+                        action='store_true', default=False,
+                        help="validate downloads against checksums; retry download if necessary")
+
     args = parser.parse_args()
-    
+
     storage = LocalStorage(args.target_directory)
-    
+
     for scene in SceneFeed(args.email).get_items(args.order):
-        storage.store(scene)
+        storage.store(scene, check_md5=args.check_downloads)
