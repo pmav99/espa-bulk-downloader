@@ -23,6 +23,26 @@ MAX_RETRIES = 3
 __author__ = "David V. Hill"
 __version__ = "1.1.0"
 
+EPILOG = r"""
+ESPA Bulk Download Client Version 1.0.0. [Tested with Python 2.7]
+
+Retrieves all completed scenes for the user/order
+and places them into the target directory.
+Scenes are organized by order.
+It is safe to cancel and restart the client, as it will
+only download scenes one time (per directory)
+
+*** Important ***
+If you intend to automate execution of this script,
+please take care to ensure only 1 instance runs at a time.
+Also please do not schedule execution more frequently than
+once per hour.
+
+Examples:
+---------
+Linux/Mac : ./download_espa_order.py -e your_email@server.com -o ALL -d /some/directory/with/free/space
+Windows   : C:\python27\python download_espa_order.py -e your_email@server.com -o ALL -d C:\some\directory\with\free\spa
+"""
 
 class SceneFeed(object):
     """SceneFeed parses the ESPA RSS Feed for the named email address and generates
@@ -144,28 +164,7 @@ class LocalStorage(object):
 
 
 def main():
-    e_parts = ['ESPA Bulk Download Client Version 1.0.0. [Tested with Python 2.7]\n']
-    e_parts.append('Retrieves all completed scenes for the user/order\n')
-    e_parts.append('and places them into the target directory.\n')
-    e_parts.append('Scenes are organized by order.\n\n')
-    e_parts.append('It is safe to cancel and restart the client, as it will\n')
-    e_parts.append('only download scenes one time (per directory)\n')
-    e_parts.append(' \n')
-    e_parts.append('*** Important ***\n')
-    e_parts.append('If you intend to automate execution of this script,\n')
-    e_parts.append('please take care to ensure only 1 instance runs at a time.\n')
-    e_parts.append('Also please do not schedule execution more frequently than\n')
-    e_parts.append('once per hour.\n')
-    e_parts.append(' \n')
-    e_parts.append('------------\n')
-    e_parts.append('Examples:\n')
-    e_parts.append('------------\n')
-    e_parts.append('Linux/Mac: ./download_espa_order.py -e your_email@server.com -o ALL -d /some/directory/with/free/space\n\n')
-    e_parts.append('Windows:   C:\python27\python download_espa_order.py -e your_email@server.com -o ALL -d C:\some\directory\with\\free\space')
-    e_parts.append('\n ')
-    epilog = ''.join(e_parts)
-
-    parser = argparse.ArgumentParser(epilog=epilog, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(epilog=EPILOG, formatter_class=argparse.RawDescriptionHelpFormatter)
 
     parser.add_argument("-e", "--email",
                         required=True,
