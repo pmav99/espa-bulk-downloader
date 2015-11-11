@@ -25,6 +25,6 @@ setup(
     ],
     entry_points="""
         [console_scripts]
-        download_espa_order.py=espa_bulk_downloader:main
+        download_espa_order.py=espa_bulk_downloader:cli
     """,
 )

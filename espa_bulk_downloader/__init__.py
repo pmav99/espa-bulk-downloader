@@ -21,7 +21,7 @@ import feedparser
 MAX_RETRIES = 3
 
 __author__ = "David V. Hill"
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 
 EPILOG = r"""
 ESPA Bulk Download Client Version 1.0.0. [Tested with Python 2.7]
@@ -171,32 +171,39 @@ class LocalStorage(object):
         os.rename(self.tmp_scene_path(scene), self.scene_path(scene))
 
 
-def main():
+def process(target_directory, email, order, check_md5):
+    storage = LocalStorage(target_directory)
+    for scene in SceneFeed(email).get_items(order):
+        storage.store(scene, check_md5=check_md5)
+
+
+def cli():
+    # setup logging.
+    logging.basicConfig(level=20)
+
+    # parse CLI arguments
     parser = argparse.ArgumentParser(epilog=EPILOG, formatter_class=argparse.RawDescriptionHelpFormatter)
-
-    parser.add_argument("-e", "--email",
-                        required=True,
-                        help="email address for the user that submitted the order)")
-
-    parser.add_argument("-o", "--order",
-                        required=True,
-                        help="which order to download (use ALL for every order)")
-
-    parser.add_argument("-d", "--target_directory",
-                        required=True,
-                        help="where to store the downloaded scenes")
-
-    parser.add_argument("-c", "--check_downloads",
-                        action='store_true', default=False,
-                        help="validate downloads against checksums; retry download if necessary")
-
+    parser.add_argument(
+        "-e", "--email",
+        required=True,
+        help="email address for the user that submitted the order)"
+    )
+    parser.add_argument(
+        "-o", "--order",
+        required=True,
+        help="which order to download (use ALL for every order)"
+    )
+    parser.add_argument(
+        "-d", "--target_directory",
+        required=True,
+        help="where to store the downloaded scenes"
+    )
+    parser.add_argument(
+        "-c", "--check_downloads",
+        action='store_true', default=False,
+        help="validate downloads against checksums; retry download if necessary"
+    )
     args = parser.parse_args()
 
-    storage = LocalStorage(args.target_directory)
-
-    for scene in SceneFeed(args.email).get_items(args.order):
-        storage.store(scene, check_md5=args.check_downloads)
-
-
-if __name__ == '__main__':
-    main()
+    # start processing
+    process(args.target_directory, args.email, args.order, args.check_downloads)
