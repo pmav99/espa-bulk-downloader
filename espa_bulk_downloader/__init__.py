@@ -172,15 +172,19 @@ class LocalStorage(object):
 
 
 def process(target_directory, email, order, check_md5):
+    logger.info("Started scene processing.")
     storage = LocalStorage(target_directory)
+    processed = False
     for scene in SceneFeed(email).get_items(order):
+        logger.info("Processing scene: %s", scene.name)
         storage.store(scene, check_md5=check_md5)
+        processed = True
+    if processed is False:
+        logger.warning("No scenes were processed!")
+    logger.info("Finished scenes processing.")
 
 
 def cli():
-    # setup logging.
-    logging.basicConfig(level=20)
-
     # parse CLI arguments
     parser = argparse.ArgumentParser(epilog=EPILOG, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument(
@@ -203,7 +207,22 @@ def cli():
         action='store_true', default=False,
         help="validate downloads against checksums; retry download if necessary"
     )
+    parser.add_argument(
+        "-s", "--silent",
+        action='store_false',
+        help="set this flag if you don't want log messages"
+    )
     args = parser.parse_args()
+
+    # setup logging.
+    log_level = logging.WARNING if args.silent else logging.INFO
+    logging.basicConfig(
+        level=log_level,
+        format="%(levelname)-8s; %(asctime)s; %(name)s; %(funcName)s; %(lineno)4d: %(message)s"
+    )
 
     # start processing
     process(args.target_directory, args.email, args.order, args.check_downloads)
+
+if __name__ == "__main__":
+    cli()
