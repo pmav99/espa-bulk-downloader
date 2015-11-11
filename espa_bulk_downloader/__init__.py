@@ -9,16 +9,15 @@ Purpose: A simple python client that will download all available (completed) sce
 Requires: Python feedparser and standard Python installation.
 """
 
-import feedparser
+import os
+import shutil
+import hashlib  # Python 2.5+ only; replaced md5 and sha modules
 import urllib2
 import argparse
-import shutil
-import os
-import hashlib  # Python 2.5+ only; replaced md5 and sha modules
+
+import feedparser
 
 MAX_RETRIES = 3
-
-
 
 __author__ = "David V. Hill"
 __version__ = "1.1.0"
