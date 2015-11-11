@@ -12,6 +12,7 @@ Requires: Python feedparser and standard Python installation.
 import os
 import shutil
 import hashlib  # Python 2.5+ only; replaced md5 and sha modules
+import logging
 import urllib2
 import argparse
 
@@ -42,6 +43,20 @@ Examples:
 Linux/Mac : ./download_espa_order.py -e your_email@server.com -o ALL -d /some/directory/with/free/space
 Windows   : C:\python27\python download_espa_order.py -e your_email@server.com -o ALL -d C:\some\directory\with\free\spa
 """
+
+
+# Configure logging
+try:  # Python 2.7+
+    from logging import NullHandler
+except ImportError:
+    class NullHandler(logging.Handler):
+        def emit(self, record):
+            pass
+finally:
+    logger = logging.getLogger('espa_bulk')
+    # Set default logging handler to avoid "No handler found" warnings.
+    logger.addHandler(NullHandler())
+
 
 class SceneFeed(object):
     """SceneFeed parses the ESPA RSS Feed for the named email address and generates
@@ -84,19 +99,12 @@ class SceneFeed(object):
 
 
 class Scene(object):
-
     def __init__(self, srcurl, orderid):
-
         self.srcurl = srcurl
-
         self.md5url = srcurl.replace('tar.gz', 'md5')
-
         self.orderid = orderid
-
         parts = self.srcurl.split("/")
-
         self.filename = parts[len(parts) - 1]
-
         self.name = self.filename.split('.tar.gz')[0]
 
 
@@ -118,20 +126,21 @@ class LocalStorage(object):
         return os.path.exists(self.scene_path(scene))
 
     def store(self, scene, check_md5=False):
-
-        if self.is_stored(scene): return
+        if self.is_stored(scene):
+            logger.info("Scene is already downloaded. Skipping: %s", scene.name)
+            return
 
         download_directory = self.directory_path(scene)
 
         #make sure we have a target to land the scenes
         if not os.path.exists(download_directory):
             os.makedirs(download_directory)
-            print ("Created target_directory:%s" % download_directory)
+            logger.info("Created target_directory:%s", download_directory)
 
         dl_okay = False
         n_retries = 0
         while not dl_okay:
-            print ("Copying %s to %s" % (scene.name, download_directory))
+            logger.info("Copying %s to %s", scene.name, download_directory)
             req = urllib2.urlopen(scene.srcurl)
 
             with open(self.tmp_scene_path(scene), 'wb') as target_handle:
@@ -141,7 +150,7 @@ class LocalStorage(object):
                 try:
                     md5_req = urllib2.urlopen(scene.md5url)
                 except urllib2.URLError:
-                    print("md5 checksum for %s not available" % scene.name)
+                    logger.info("md5 checksum for %s not available", scene.name)
                     dl_okay = True
                 else:
                     md5sum_truth = md5_req.readline().split()[0]
@@ -150,13 +159,13 @@ class LocalStorage(object):
 
                     if md5sum_truth != md5sum_test:
                         if n_retries >= MAX_RETRIES:
-                            print("md5 checksum for %s is not valid, but maximum retries exceeded" % scene.name)
+                            logger.info("md5 checksum for %s is not valid, but maximum retries exceeded", scene.name)
                             os.remove(self.tmp_scene_path(scene))
                         else:
-                            print("md5 checksum for %s is not valid. Retrying download" % scene.name)
+                            logger.info("md5 checksum for %s is not valid. Retrying download", scene.name)
                             n_retries += 1
                     else:
-                        print("md5 checksum for %s is OKAY" % scene.name)
+                        logger.info("md5 checksum for %s is OKAY", scene.name)
                         dl_okay = True
 
         os.rename(self.tmp_scene_path(scene), self.scene_path(scene))
