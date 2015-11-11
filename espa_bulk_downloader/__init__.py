@@ -137,6 +137,7 @@ class LocalStorage(object):
                             print("md5 checksum for %s is not valid. Retrying download" % scene.name)
                             n_retries += 1
                     else:
+                        print("md5 checksum for %s is OKAY" % scene.name)
                         dl_okay = True
 
         os.rename(self.tmp_scene_path(scene), self.scene_path(scene))
